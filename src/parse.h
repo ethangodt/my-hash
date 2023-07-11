@@ -1,7 +1,3 @@
-//
-// Created by Ethan Godt on 7/11/23.
-//
-
 #ifndef MY_HASH_PARSE_H
 #define MY_HASH_PARSE_H
 
