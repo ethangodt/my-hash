@@ -5,5 +5,7 @@
 
 int hash(char *key);
 
+_Bool insert(char *str);
+
 #endif //MY_HASH_HASH_H
 

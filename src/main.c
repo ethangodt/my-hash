@@ -1,28 +1,38 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "parse.h"
 #include "hash.h"
 
 int main() {
-    char *command = NULL;
+    char *input = NULL;
     char **parsed_command = NULL;
     size_t len = 0;
     ssize_t read;
     while (1) {
-        read = getline(&command, &len, stdin);
+        read = getline(&input, &len, stdin);
         if (read == -1) {
             return 1;
         }
-        if (strcmp(command, "exit\n") == 0) {
-            return 0;
-        } else {
-            printf("you entered: %s", command);
-            parse_command(command, &parsed_command);
-            for (int i = 0; parsed_command[i] != NULL; ++i) {
-                printf("arg %d is: %s\n", i, parsed_command[i]);
-                printf("is command insert: %s\n", match_command(parsed_command[i]) == INSERT ? "true" : "false");
-                printf("hash value of this is: %d\n", hash(parsed_command[i], HASH_SIZE));
-            }
+
+        parse_command(input, &parsed_command);
+        enum command command = match_command(parsed_command[0]);
+
+        if (command == INSERT) {
+            char *key = parsed_command[1];
+            int result = insert(key);
+            printf("%s was inserted successfully: %s\n", key, result ? "true" : "false");
         }
+
+        // I should probably just reuse the input
+        // so I don't have to free all of this
+        for (int i = 0; parsed_command[i] != NULL; i++) {
+            printf("token %d address: %p\n", i, parsed_command[i]);
+            free(parsed_command[i]);
+        }
+        printf("array %p\n", parsed_command);
+        free(parsed_command);
+        parsed_command = NULL;
     }
 }
+

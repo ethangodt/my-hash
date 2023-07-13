@@ -4,17 +4,17 @@
 
 void parse_command(char *command, char ***parsed_command_args_ptr) {
     size_t len = strlen(command);
-    size_t command_arg_count = 1; // bad
+    size_t command_arg_count = 1;
 
-    if (len > 0 && command[len - 1] == '\n') {
+    if (command[len - 1] == '\n') {
         command[len - 1] = '\0';
         len--;
     }
 
     for (int i = 0; i < len; ++i) {
-        if (command[i] == ' ') {
+        if (command[i] == ' ' || command[i] == '\0') {
             command_arg_count++;
-        };
+        }
     }
 
     *parsed_command_args_ptr = malloc(sizeof(char *) * (command_arg_count + 1));
