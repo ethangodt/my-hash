@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "parse.h"
 #include "hash.h"
 
@@ -20,17 +21,32 @@ int main() {
 
         if (command == INSERT) {
             char *key = parsed_command[1];
-            int result = insert(key);
-            printf("%s was inserted successfully: %s\n", key, result ? "true" : "false");
+            char *value = parsed_command[2];
+            printf("%s was inserted successfully: %s\n", key, insert(key, value) ? "true" : "false");
+        } else if (command == SEARCH) {
+            char *key = parsed_command[1];
+            char *value = search(key);
+            if (value != NULL) {
+                printf("search for %s found: %s\n", key, value);
+            } else {
+                printf("search for %s found nothing\n", key);
+            }
+        } else if (command == DELETE) {
+            char *key = parsed_command[1];
+            printf("value at key %s deleted successful: %s\n", key, delete(key) ? "true" : "false");
+        } else if (command == EXIT) {
+            printf("exiting\n");
+            return 0;
+        } else {
+            printf("unable to parse command\n");
         }
 
-        // I should probably just reuse the input
-        // so I don't have to free all of this
+        // free each parsed arg in the input
         for (int i = 0; parsed_command[i] != NULL; i++) {
-            printf("token %d address: %p\n", i, parsed_command[i]);
             free(parsed_command[i]);
         }
-        printf("array %p\n", parsed_command);
+
+        // free the allocated array of parsed input args for this submission
         free(parsed_command);
         parsed_command = NULL;
     }

@@ -1,39 +1,34 @@
 #include <string.h>
 #include <stdlib.h>
 #include "parse.h"
+#include "utils.h"
 
 void parse_command(char *command, char ***parsed_command_args_ptr) {
-    size_t len = strlen(command);
-    size_t command_arg_count = 1;
-
-    if (command[len - 1] == '\n') {
-        command[len - 1] = '\0';
-        len--;
+    if (command[strlen(command) - 1] == '\n') {
+        command[strlen(command) - 1] = '\0';
     }
 
-    for (int i = 0; i < len; ++i) {
-        if (command[i] == ' ' || command[i] == '\0') {
+    size_t command_arg_count = 1;
+    for (int i = 0; i < strlen(command); ++i) {
+        if (command[i] == ' ') {
             command_arg_count++;
         }
     }
 
-    *parsed_command_args_ptr = malloc(sizeof(char *) * (command_arg_count + 1));
+    *parsed_command_args_ptr = calloc(sizeof(char *), command_arg_count + 1);
 
     int current_arg = 0;
     int current_arg_start = 0;
-    for (int j = 0; j <= len; ++j) {
+    for (int j = 0; j <= strlen(command); ++j) {
         if (command[j] == ' ' || command[j] == '\0') {
-            command[j] = '\0';
-            int current_arg_length = j - current_arg_start;
-            char *arg = malloc(current_arg_length + 1);
-            strcpy(arg, &command[current_arg_start]);
+            char *arg = substr(command, current_arg_start, j);
             (*parsed_command_args_ptr)[current_arg] = arg;
             current_arg++;
             current_arg_start = j + 1;
         }
     }
 
-    (*parsed_command_args_ptr)[command_arg_count + 1] = NULL;
+    (*parsed_command_args_ptr)[command_arg_count] = NULL;
 }
 
 enum command match_command(char *possible_command) {
